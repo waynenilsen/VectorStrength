@@ -1,8 +1,10 @@
+#!/usr/bin/python3
 
 import database
 from flask import Flask, render_template, request, abort
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def hello():
@@ -30,5 +32,5 @@ if __name__ == '__main__':
     from tornado.ioloop import IOLoop
 
     http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
+    http_server.listen(int(sys.argv[1]))
     IOLoop.instance().start()

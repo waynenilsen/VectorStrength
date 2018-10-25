@@ -49,6 +49,7 @@ SOFTWARE.
     var fk_activity = -999;
 
     var no_data_count = 0;
+    var sent_data_count = 0;
 
     function send_data() {
         if(no_data_count > NO_DATA_MAX) {
@@ -69,6 +70,10 @@ SOFTWARE.
             if (xhr.readyState === 4 ) {
                 console.log(xhr.status);
                 console.log(xhr.responseText);
+                if(xhr.status === 200){
+                    sent_data_count = sent_data_count + 1;
+                    document.getElementById("sent_count").innerHTML = sent_data_count;
+                }
             }
         };
         var data = JSON.stringify({
@@ -135,6 +140,8 @@ SOFTWARE.
 <div id="accelerometer"></div>
 <br/><br/>
 <div id="magnetometer"></div>
+<br/><br/>
+<div id="sent_count"></div>
 <br/><br/>
 <div id="warning"></div>
 </body>
