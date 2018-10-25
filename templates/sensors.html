@@ -1,0 +1,141 @@
+<!--
+
+Learning to access sensors in JavaScript.
+
+The MIT License (MIT)
+
+Copyright (c) 2016 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>Sensors</title>
+<script type="text/javascript">
+
+    function get_utc_timestamp() {
+        return new Date().getTime();
+    }
+
+    var SEND_MILLI = 125;
+    var NO_DATA_MAX = 1000;
+
+    var x = null;
+    var y = null;
+    var z = null;
+    var alpha = null;
+    var beta = null;
+    var gamma = null;
+    var utc_set_start_time = get_utc_timestamp();
+    var fk_activity = -999;
+
+    var no_data_count = 0;
+
+    function send_data() {
+        if(no_data_count > NO_DATA_MAX) {
+            document.getElementById("warning").innerHTML = "COULD NOT GET DATA.";
+            return;
+        }
+        if(x == null) {
+            no_data_count = no_data_count + 1;
+            console.log('not sending because there is no data');
+            return;
+        }
+        console.log('sending data ... ');
+        var xhr = new XMLHttpRequest();
+        var url = "data";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 ) {
+                console.log(xhr.status);
+                console.log(xhr.responseText);
+            }
+        };
+        var data = JSON.stringify({
+            'x' : x,
+            'y' : y,
+            'z' : z,
+            'alpha' : alpha,
+            'beta' : beta,
+            'gamma' : gamma,
+            'utc_set_start_time' : utc_set_start_time,
+            'utc_measure_time' : get_utc_timestamp(),
+            'fk_activity' : fk_activity,
+        });
+        xhr.send(data);
+    }
+
+    setInterval(send_data, SEND_MILLI); // send data every SEND_MILLI milliseconds
+
+    function motion(event){
+        x = event.accelerationIncludingGravity.x;
+        y = event.accelerationIncludingGravity.y;
+        z = event.accelerationIncludingGravity.z;
+
+        document.getElementById("accelerometer").innerHTML = "Accelerometer: "
+            + event.accelerationIncludingGravity.x + ", "
+            + event.accelerationIncludingGravity.y + ", "
+            + event.accelerationIncludingGravity.z;
+    }
+
+    function orientation(event){
+        alpha = event.alpha;
+        beta = event.beta;
+        gamma = event.gamma;
+
+        document.getElementById("magnetometer").innerHTML = "Magnetometer: "
+            + event.alpha + ", "
+            + event.beta + ", "
+            + event.gamma;
+    }
+
+    function go(){
+      var status = document.getElementById("status");
+      if(window.DeviceMotionEvent){
+        window.addEventListener("devicemotion", motion, false);
+      }else{
+        status.innerHTML = status.innerHTML.replace(
+          "is supported", "is not supported"
+        );
+      }
+      if(window.DeviceOrientationEvent){
+        window.addEventListener("deviceorientation", orientation, false);
+      }else{
+        status.innerHTML = status.innerHTML.replace(
+          "is supported", "is not supported"
+        );
+      }
+    }
+</script>
+</head>
+<body onload="go();">
+<div id="status">API is supported. If you don't see numbers below it's because your device isn't feeding data. If you see numbers below, you're live.</div>
+<div id="set_id"></div>
+<br/><br/>
+<div id="accelerometer"></div>
+<br/><br/>
+<div id="magnetometer"></div>
+<br/><br/>
+<div id="warning"></div>
+</body>
+</html>
