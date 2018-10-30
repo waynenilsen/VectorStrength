@@ -37,7 +37,7 @@ SOFTWARE.
     }
 
     var SEND_MILLI = 125;
-    var NO_DATA_MAX = 1000;
+    var NO_DATA_MAX = 10;
 
     var x = null;
     var y = null;
@@ -46,12 +46,16 @@ SOFTWARE.
     var beta = null;
     var gamma = null;
     var utc_set_start_time = get_utc_timestamp();
-    var fk_activity = -999;
+    var fk_activity = null;
 
     var no_data_count = 0;
     var sent_data_count = 0;
 
     function send_data() {
+        if(fk_activity == null) {
+            return; // no activity selected
+        }
+
         if(no_data_count > NO_DATA_MAX) {
             document.getElementById("warning").innerHTML = "COULD NOT GET DATA.";
             return;
@@ -131,6 +135,10 @@ SOFTWARE.
         );
       }
     }
+
+    function set_activity(activity) {
+        fk_activity = activity;
+    }
 </script>
 </head>
 <body onload="go();">
@@ -144,5 +152,13 @@ SOFTWARE.
 <div id="sent_count"></div>
 <br/><br/>
 <div id="warning"></div>
+<br/><br/>
+<a id="squat" href="#" onclick="set_activity(1)">squat</a>
+<br/><br/>
+<a id="bench" href="#" onclick="set_activity(2)">bench</a>
+<br/><br/>
+<a id="deadlift" href="#" onclick="set_activity(3)">deadlift</a>
+<br/><br/>
+<a id="test" href="#" onclick="set_activity(-999)">test</a>
 </body>
 </html>
