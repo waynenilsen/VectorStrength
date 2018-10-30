@@ -102,9 +102,9 @@ SOFTWARE.
         z = event.accelerationIncludingGravity.z;
 
         document.getElementById("accelerometer").innerHTML = "Accelerometer: "
-            + event.accelerationIncludingGravity.x + ", "
-            + event.accelerationIncludingGravity.y + ", "
-            + event.accelerationIncludingGravity.z;
+            + event.accelerationIncludingGravity.x.toFixed(2) + ", "
+            + event.accelerationIncludingGravity.y.toFixed(2) + ", "
+            + event.accelerationIncludingGravity.z.toFixed(2);
     }
 
     function orientation(event){
@@ -113,9 +113,9 @@ SOFTWARE.
         gamma = event.gamma;
 
         document.getElementById("magnetometer").innerHTML = "Magnetometer: "
-            + event.alpha + ", "
-            + event.beta + ", "
-            + event.gamma;
+            + event.alpha.toFixed(2) + ", "
+            + event.beta.toFixed(2) + ", "
+            + event.gamma.toFixed(2);
     }
 
     function go(){
@@ -160,5 +160,7 @@ SOFTWARE.
 <a id="deadlift" href="#" onclick="set_activity(3)">deadlift</a>
 <br/><br/>
 <a id="test" href="#" onclick="set_activity(-999)">test</a>
+<br/><br/>
+<a id="stop" href="#" onclick="set_activity(null)">stop</a>
 </body>
 </html>
