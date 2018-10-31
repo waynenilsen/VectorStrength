@@ -39,17 +39,40 @@ SOFTWARE.
     var SEND_MILLI = 125;
     var NO_DATA_MAX = 10;
 
-    var x = null;
-    var y = null;
-    var z = null;
-    var alpha = null;
-    var beta = null;
-    var gamma = null;
-    var utc_set_start_time = get_utc_timestamp();
-    var fk_activity = null;
+    var x;
+    var y;
+    var z;
+    var alpha;
+    var beta;
+    var gamma;
+    var utc_set_start_time;
+    var fk_activity;
+    var no_data_count;
+    var sent_data_count;
+    var interval = null;
 
-    var no_data_count = 0;
-    var sent_data_count = 0;
+    function init() {
+        if(interval != null) {
+            clearInterval(interval);
+        }
+        x = null;
+        y = null;
+        z = null;
+        alpha = null;
+        beta = null;
+        gamma = null;
+        utc_set_start_time = get_utc_timestamp();
+        fk_activity = null;
+        no_data_count = 0;
+        sent_data_count = 0;
+        interval = setInterval(send_data, SEND_MILLI); // send data every SEND_MILLI milliseconds
+        setWarning("");
+    }
+
+
+    function setWarning(warning) {
+        document.getElementById("warning").innerHTML = warning;
+    }
 
     function send_data() {
         if(fk_activity == null) {
@@ -57,7 +80,7 @@ SOFTWARE.
         }
 
         if(no_data_count > NO_DATA_MAX) {
-            document.getElementById("warning").innerHTML = "COULD NOT GET DATA.";
+            setWarning("could not get data");
             return;
         }
         if(x == null) {
@@ -94,7 +117,6 @@ SOFTWARE.
         xhr.send(data);
     }
 
-    setInterval(send_data, SEND_MILLI); // send data every SEND_MILLI milliseconds
 
     function motion(event){
         x = event.accelerationIncludingGravity.x;
@@ -119,6 +141,8 @@ SOFTWARE.
     }
 
     function go(){
+
+        init();
       var status = document.getElementById("status");
       if(window.DeviceMotionEvent){
         window.addEventListener("devicemotion", motion, false);
@@ -138,6 +162,11 @@ SOFTWARE.
 
     function set_activity(activity) {
         fk_activity = activity;
+    }
+
+    function stop_activity() {
+        set_activity(null);
+        init();
     }
 </script>
 </head>
@@ -161,6 +190,6 @@ SOFTWARE.
 <br/><br/>
 <a id="test" href="#" onclick="set_activity(-999)">test</a>
 <br/><br/>
-<a id="stop" href="#" onclick="set_activity(null)">stop</a>
+<a id="stop" href="#" onclick="stop_activity()">stop</a>
 </body>
 </html>
