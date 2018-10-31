@@ -98,7 +98,7 @@ SOFTWARE.
                 console.log(xhr.status);
                 console.log(xhr.responseText);
                 if(xhr.status === 200){
-                    sent_data_count = sent_data_count + 1;
+                    sent_data_count++;
                     document.getElementById("sent_count").innerHTML = sent_data_count;
                 }
             }
